@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.1d3 20150301//EN"  "JATS-archivearticle1.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <front>
+    <article-meta>
+      <title-group>
+        <article-title>Logistic Linear Mixed Model (Simplified for Binder)</article-title>
+      </title-group>
+      <contrib-group content-type="author">
+        <contrib contrib-type="person">
+          <name>
+            <surname>true</surname>
+          </name>
+        </contrib>
+      </contrib-group>
+    </article-meta>
+  </front>
+
+  <body>
+    <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: setup, include=FALSE
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)</code>
+    <code specific-use="output" language="json">{}</code>
+    </alternatives>
+    </named-content>
+    </code>
+    <sec>
+      <title>Goal</title>
+      <p>Reanalysis of mass cytometry data from @aghaeepour2017immune using the Logistic Linear Mixed Model.</p>
+    </sec>
+    <sec>
+      <title>Prerequisites</title>
+      <p>Parse input parameters.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: parse_input_parameters
+ncells = Inf
+zenodo_url = &quot;https://zenodo.org/record/2597291/files/&quot;
+prefit = paste0(&quot;cytoeffect_llmm_ncells_&quot;,ncells,&quot;.Rdata&quot;)
+prefit
+prefit_reduced = paste0(&quot;cytoeffect_llmm_ncells_&quot;,ncells,&quot;_reduced.Rdata&quot;)
+prefit_reduced</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+      <p>Load packages.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: load_packages
+library(&quot;cytoeffect&quot;)
+library(&quot;tidyverse&quot;)
+library(&quot;magrittr&quot;)
+library(&quot;ggthemes&quot;)
+library(&quot;cowplot&quot;)
+theme_set(theme_few())</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+    </sec>
+    <sec>
+      <title>Load Data</title>
+      <p>Download preprocessed data from Zenodo.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: download_zenodo
+rdata_filenames = c(prefit, prefit_reduced)
+for(filename in rdata_filenames) {
+  if(!file.exists(filename)) {
+    download.file(url = paste0(zenodo_url, filename), 
+                  destfile = filename,
+                  mode = &quot;wb&quot;)
+  }
+}</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+    </sec>
+    <sec>
+      <title>HMC Diagnostics</title>
+      <p>Traceplot of posterior samples.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: post_sampling, fig.wide=TRUE
+load(file = prefit)
+rstan::traceplot(obj$fit_mcmc, inc_warmup = TRUE)
+rstan::traceplot(obj$fit_mcmc, inc_warmup = FALSE)</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+      <p>Some more MCMC diagnostics. According to empirically findings, Rhat &gt; 1.1 is usually indicative of problems in the fit.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: mcmc_diagnostics
+pars = c(&quot;beta&quot;,&quot;sigma_donor&quot;,&quot;L_donor&quot;,&quot;z_donor&quot;)
+tb = rstan::summary(obj$fit_mcmc, 
+                    pars = pars)$summary %&gt;% 
+  as.tibble(rownames = &quot;pars&quot;, .before = 1) %&gt;% 
+  select(pars, n_eff, Rhat)
+tb %&lt;&gt;% na.omit() # Stan fills upper triangle with zeros
+tb %&gt;% arrange(n_eff)
+tb %&gt;% arrange(desc(Rhat))
+tb %&gt;% summarize(min = min(n_eff), max = max(n_eff))
+tb %&gt;% summarize(min = min(Rhat), max = max(Rhat))</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+    </sec>
+    <sec>
+      <title>Results</title>
+      <p>Plot fixed effects.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: fixed_effects, fig.small=TRUE
+p_full = plot(obj, type = &quot;beta&quot;) + 
+  ggtitle(expression(&quot;Fixed Effects&quot;~beta)) +
+  xlab(&quot;log-odds of 3rd/1st trimester&quot;)
+p_full</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+      <p>Extract log-odds for pSTAT1.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: fixed_effects_pSTAT1
+post_beta = rstan::extract(obj$fit_mcmc, pars = &quot;beta&quot;)[[1]]
+post_beta %&lt;&gt;% as.tibble
+names(post_beta) = c(&quot;intercept&quot;,obj$protein_names)
+quantile(post_beta$pSTAT1, probs = c(0.025, 0.975))
+quantile(exp(post_beta$pSTAT1), probs = c(0.025, 0.975))</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+      <p>Plot random effects.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: random_effects, fig.small=TRUE
+plot(obj, type = &quot;sigma_donor&quot;) + 
+  ggtitle(&quot;Marker Standard Deviation&quot;~sigma)
+ggsave(&quot;sigma_glmm.pdf&quot;, width = 4, height = 3)</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+      <p>Plot posterior correlations.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: posterior_correlations, fig.small=TRUE
+plot(obj, type = &quot;Cor_donor&quot;) + 
+  ggtitle(expression(&quot;Marker Correlations&quot;~Omega~&quot;(donor)&quot;))
+ggsave(&quot;posterior_summary_cor_glmm.pdf&quot;, width = 4, height = 4)</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+    </sec>
+    <sec>
+      <title>Refit Without pSTAT1</title>
+      <p>Refit model to test potentional collider confounding.</p>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: refit
+protein_names = obj$protein_names[-which(obj$protein_names == &quot;pSTAT1&quot;)]
+if(file.exists(prefit_reduced)) {
+  load(file = prefit_reduced)
+} else {
+  obj = cytoeffect::glmm(df_samples_subset, protein_names, 
+                         condition = &quot;term&quot;, group = &quot;donor&quot;,
+                         iter = 325, warmup = 200, 
+                         num_chains = ncores)
+  save(obj,file = prefit_reduced)
+}</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: plot_refit
+p_reduced = plot(obj, type = &quot;beta&quot;) + 
+  ggtitle(expression(&quot;Reduced Fixed Effects&quot;~beta)) +
+  xlab(&quot;log-odds of 3rd/1st trimester&quot;)
+plot_grid(p_full, p_reduced, labels = &quot;AUTO&quot;)
+ggsave(filename = &quot;beta_glmm.pdf&quot;, width = 8, height = 3)</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+    </sec>
+    <sec>
+      <title>Session Info</title>
+      <code specific-use="cell"><named-content><alternatives>
+        <code specific-use="source" language="r" executable="yes">#: session_info
+sessionInfo()</code>
+      <code specific-use="output" language="json">{}</code>
+      </alternatives>
+      </named-content>
+      </code>
+    </sec>
+    <sec>
+      <title>References</title>
+    </sec>
+  </body>
+  <back/>
+</article>
