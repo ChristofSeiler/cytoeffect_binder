@@ -1,4 +1,4 @@
-# cytoeffect Analyses for Binder
+# cytoeffect analyses for binder
 
 Simplified version of cytoeffect analyses for binder.
 
