@@ -1,7 +1,5 @@
 # cytoeffect analyses for binder
 
-Simplified version of cytoeffect analyses for binder.
-
 The full analyeses are available on the package [website](https://christofseiler.github.io/cytoeffect/).
 
 See our methods [paper](https://arxiv.org/abs/1903.07976) for details:
