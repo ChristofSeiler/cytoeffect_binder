@@ -1,8 +1,8 @@
 # cytoeffect analyses for binder
 
-The full analyeses are available on the package [website](https://christofseiler.github.io/cytoeffect/).
+The full analyses are available on the package [website](https://christofseiler.github.io/cytoeffect/).
 
-See our methods [paper](https://arxiv.org/abs/1903.07976) for details:
+See our methods [paper](https://arxiv.org/abs/1903.07976) for technical details:
 
 ```
 Uncertainty Quantification in Multivariate Mixed Models for Mass Cytometry Data 
