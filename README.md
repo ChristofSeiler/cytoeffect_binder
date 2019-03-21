@@ -5,7 +5,10 @@ The full analyses are available on the R package [website](https://christofseile
 See our methods [paper](https://arxiv.org/abs/1903.07976) for technical details:
 
 ```
-Uncertainty Quantification in Multivariate Mixed Models for Mass Cytometry Data 
-C. Seiler, L. Kronstad, L. Simpson, M. Le Gars, E. Vendrame, C. Blish, S. Holmes 
-arXiv:1903.07976
+@article{,
+  author = {Christof Seiler and Lisa M Kronstad and Laura J Simpson and Mathieu {Le Gars} and Elena Vendrame and Catherine A Blish and Susan Holmes},
+  title = {Uncertainty Quantification in Multivariate Mixed Models for Mass Cytometry Data},
+  journal = {arXiv preprint arXiv:1903.07976},
+  year = {2019},
+}
 ```
