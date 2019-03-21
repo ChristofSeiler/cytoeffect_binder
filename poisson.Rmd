@@ -36,6 +36,7 @@ library("tidyverse")
 library("magrittr")
 library("ggthemes")
 library("cowplot")
+library("ggcorrplot")
 theme_set(theme_few())
 ```
 
@@ -70,8 +71,8 @@ Some more MCMC diagnostics. According to empirically findings, Rhat > 1.1 is usu
 pars = c("beta",
          "sigma","sigma_term","sigma_donor",
          "Cor","Cor_term","Cor_donor")
-tb = summary(obj$fit_mcmc, 
-             pars = pars)$summary %>% 
+tb = rstan::summary(obj$fit_mcmc, 
+                    pars = pars)$summary %>% 
   as.tibble(rownames = "pars", .before = 1) %>% 
   dplyr::select(pars, n_eff, Rhat)
 tb %<>% na.omit() # Stan fills upper triangle with zeros
@@ -90,13 +91,13 @@ p1 = plot(obj, type = "beta") +
   ggtitle(expression("Fixed Effects"~beta)) +
   theme(legend.position = "bottom") +
   guides(col = guide_legend(ncol = 1)) + 
-  scale_color_few()
+  scale_color_manual(values=c("#5DA5DA", "#FAA43A", "#60BD68"))
 p1
 plot(obj, type = "beta") + 
   facet_wrap(~condition, scales = "free_x") +
   theme(legend.position = "bottom") +
   guides(col = guide_legend(ncol = 1)) + 
-  scale_color_few()
+  scale_color_manual(values=c("#5DA5DA", "#FAA43A", "#60BD68"))
 ```
 
 Extract expected count difference for pSTAT1.
@@ -145,12 +146,12 @@ tb_log_count = bind_rows(
 plot_diag = function(marker) {
   ggplot(tb_log_count, aes_string(marker, fill = "term")) + 
     geom_histogram(bins = 40, position = "identity", alpha = 0.5) +
-    scale_fill_few()
+    scale_fill_manual(values=c("#5DA5DA", "#FAA43A"))
 }
 plot_off_diag = function(marker1, marker2) {
   ggplot(tb_log_count, aes_string(marker1, marker2, color = "term")) +
     geom_density2d() + 
-    scale_color_few()
+    scale_color_manual(values=c("#5DA5DA", "#FAA43A"))
 }
 ppair = plot_grid(
   plot_diag("pSTAT1") + theme(legend.position = "none"),
