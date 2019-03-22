@@ -1,5 +1,7 @@
 # cytoeffect analyses for binder
 
+RStudio: [![Binder](http://mybinder.org/badge_logo.svg)](http://mybinder.org/v2/gh/binder-examples/r/master?urlpath=rstudio)
+
 The full analyses are available on the R package [website](https://christofseiler.github.io/cytoeffect/).
 
 See our methods [paper](https://arxiv.org/abs/1903.07976) for technical details:
