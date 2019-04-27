@@ -23,7 +23,7 @@ Parse input parameters.
 
 ```{r parse_input_parameters}
 ncells = Inf
-zenodo_url = "https://zenodo.org/record/2597291/files/"
+zenodo_url = "https://zenodo.org/record/2652578/files/"
 prefit = paste0("cytoeffect_plmm_ncells_",ncells,".Rdata")
 prefit
 ```
