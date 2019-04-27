@@ -148,12 +148,12 @@ tb_log_count = bind_rows(
 plot_diag = function(marker) {
   ggplot(tb_log_count, aes_string(marker, fill = "term")) + 
     geom_histogram(bins = 40, position = "identity", alpha = 0.5) +
-    scale_fill_few()
+    scale_fill_manual(values=c("#5DA5DA", "#FAA43A"))
 }
 plot_off_diag = function(marker1, marker2) {
   ggplot(tb_log_count, aes_string(marker1, marker2, color = "term")) +
     geom_density2d() + 
-    scale_color_few()
+    scale_color_manual(values=c("#5DA5DA", "#FAA43A"))
 }
 ppair = plot_grid(
   plot_diag("pSTAT1") + theme(legend.position = "none"),
@@ -190,15 +190,6 @@ Plot posterior correlations.
 ```{r posterior_cor}
 plist = plot(obj, type = "Cor")
 plist
-```
-
-Multivariate posterior MDS plots.
-
-```{r multivariate_posterior}
-cytoeffect::plot_mds(obj)
-ggsave(filename = "posterior_mds_latent_variable_mu_scaled.pdf", width = 10, height = 5)
-cytoeffect::plot_mds(obj, asp = FALSE)
-ggsave(filename = "posterior_mds_latent_variable_mu_unscaled.pdf", width = 10, height = 5)
 ```
 
 Pairwise correlation change between conditions.
