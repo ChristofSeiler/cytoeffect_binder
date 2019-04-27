@@ -190,6 +190,15 @@ plist = plot(obj, type = "Cor")
 plist
 ```
 
+Multivariate posterior MDS plots.
+
+```{r multivariate_posterior}
+cytoeffect::plot_mds(obj)
+ggsave(filename = "posterior_mds_latent_variable_mu_scaled.pdf", width = 10, height = 5)
+cytoeffect::plot_mds(obj, asp = FALSE)
+ggsave(filename = "posterior_mds_latent_variable_mu_unscaled.pdf", width = 10, height = 5)
+```
+
 Pairwise correlation change between conditions.
 
 ```{r correlation_uncertainty}
