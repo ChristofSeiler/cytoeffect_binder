@@ -131,13 +131,13 @@ pSTAT5_index = which(obj$protein_names == "pSTAT5")
 post_beta = rstan::extract(obj$fit_mcmc, pars = "beta")[[1]]
 tb_log_count = bind_rows(
   tibble(
-    term = obj$conditions[1],
+    term = levels(pull(obj$df_samples_subset, obj$condition))[1],
     pSTAT1 = post_beta[,pSTAT1_index,1],
     pSTAT3 = post_beta[,pSTAT3_index,1],
     pSTAT5 = post_beta[,pSTAT5_index,1]
   ),
   tibble(
-    term = obj$conditions[2],
+    term = levels(pull(obj$df_samples_subset, obj$condition))[2],
     pSTAT1 = post_beta[,pSTAT1_index,2],
     pSTAT3 = post_beta[,pSTAT3_index,2],
     pSTAT5 = post_beta[,pSTAT5_index,2]
@@ -146,12 +146,12 @@ tb_log_count = bind_rows(
 plot_diag = function(marker) {
   ggplot(tb_log_count, aes_string(marker, fill = "term")) + 
     geom_histogram(bins = 40, position = "identity", alpha = 0.5) +
-    scale_fill_manual(values=c("#5DA5DA", "#FAA43A"))
+    scale_fill_few()
 }
 plot_off_diag = function(marker1, marker2) {
   ggplot(tb_log_count, aes_string(marker1, marker2, color = "term")) +
     geom_density2d() + 
-    scale_color_manual(values=c("#5DA5DA", "#FAA43A"))
+    scale_color_few()
 }
 ppair = plot_grid(
   plot_diag("pSTAT1") + theme(legend.position = "none"),
