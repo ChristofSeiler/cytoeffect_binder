@@ -104,8 +104,10 @@ Extract expected count difference for pSTAT1.
 
 ```{r fixed_effects_pSTAT1}
 post_beta = rstan::extract(obj$fit_mcmc, pars = "beta")[[1]]
-first_index = which(obj$conditions == "1st trimester")
-third_index = which(obj$conditions == "3rd trimester")
+first_index = which(levels(pull(obj$df_samples_subset, obj$condition)) 
+                    == "1st trimester")
+third_index = which(levels(pull(obj$df_samples_subset, obj$condition)) 
+                    == "3rd trimester")
 pstat1_index = which(obj$protein_names == "pSTAT1")
 first_log_count = quantile(post_beta[,pstat1_index,first_index], 
                            probs = c(0.025, 0.5, 0.975))

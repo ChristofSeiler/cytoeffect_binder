@@ -2,3 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+posterior_multivariate_plmm.pdf
+posterior_summary_plmm.pdf
+posterior_mds_latent_variable_mu_unscaled.pdf
+posterior_mds_latent_variable_mu_scaled.pdf
+cytoeffect_plmm_ncells_Inf.Rdata
